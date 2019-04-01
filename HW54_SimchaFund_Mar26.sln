@@ -5,6 +5,8 @@ VisualStudioVersion = 15.0.28307.421
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HW54_SimchaFund_Mar26", "HW54_SimchaFund_Mar26\HW54_SimchaFund_Mar26.csproj", "{D06CB655-95E4-4277-9B22-29E35E4C3688}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClassLibrary1", "ClassLibrary1\ClassLibrary1.csproj", "{6281AAD2-32FD-41F8-AF96-311FC30E87AF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{D06CB655-95E4-4277-9B22-29E35E4C3688}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D06CB655-95E4-4277-9B22-29E35E4C3688}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D06CB655-95E4-4277-9B22-29E35E4C3688}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6281AAD2-32FD-41F8-AF96-311FC30E87AF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6281AAD2-32FD-41F8-AF96-311FC30E87AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6281AAD2-32FD-41F8-AF96-311FC30E87AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6281AAD2-32FD-41F8-AF96-311FC30E87AF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,0 +1,77 @@
+﻿@using HW54_SimchaFund_Mar26.Models
+@using ClassLibrary1
+@model GetDonationsForSimchaViewModelList
+@{
+    ViewBag.Title = "GetDonationsForSimcha";
+}
+
+<div class="container">
+    <div id="simcha-contributors-index">
+
+        <div class="header">
+            <h1>
+                Contributors for the @Model.SimchaName
+            </h1>
+        </div>
+        <div class="header">
+            <input type="text" class="input-sm" placeholder="Search" id="search" />
+            <button class="btn btn-danger" id="clear">Clear</button>
+        </div>
+        <form method="POST" action="/home/updatecontributions">
+            @*<input name="authenticity_token" value="FLLOt4iFYoTUuiXkTEX3fvMK8gbL4sOuD58b2GpqHuI=" type="hidden">*@
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped">
+                    <tr>
+                        <th style="text-align:center;vertical-align:middle;">Contribute</th>
+                        <th style="text-align:center;vertical-align:middle;">Name</th>
+                        <th style="text-align:center;vertical-align:middle;">Balance</th>
+                        <th style="text-align:center;vertical-align:middle;">Always Include</th>
+                        <th style="text-align:center;vertical-align:middle;">Amount</th>
+                    </tr>
+                    @foreach (GetDonationsForSimchaViewModel donations in Model.GetDonations)
+                    {
+                    <tr data-contributor-name='@donations.Contributer.FirstName @donations.Contributer.LastName'>
+                        <td style="text-align:center;vertical-align:middle;">
+
+                            @if (donations.Donate)
+                            {
+                                <input type="checkbox" name="getDonations[@donations.NumberInList].donated" value="true" class="form-control" checked />
+                            }
+                            else
+                            {
+                                <input type="checkbox"  name="getDonations[@donations.NumberInList].donated" value="true" class="form-control" />
+
+                            }
+                            <input type="hidden"  name="getDonations[@donations.NumberInList].donated" value="false" />
+                          
+                        </td>
+                        <td style="text-align:center;vertical-align:middle;">
+                            <span style="">
+                                @donations.Contributer.FirstName @donations.Contributer.LastName
+                            </span>
+                        </td>
+                        <td style="text-align:center;vertical-align:middle;">
+                            <span style="">$@donations.Contributer.Balance</span>
+                        </td>
+                        <td style="text-align:center;vertical-align:middle;">
+                            @if (donations.Contributer.AlwaysInclude)
+                            {
+                                <span style="font-size:20px;" class="glyphicon glyphicon-ok-sign"></span>
+                            }
+                        </td>
+                        <td style="text-align:center;vertical-align:middle;">
+                            <input name="getDonations[@donations.NumberInList].amount" type="text" class="input-sm" value="@donations.Amount">
+                            <input type="hidden" name="getDonations[@donations.NumberInList].contributerid" value="@donations.Contributer.Id" />
+                            <input type="hidden"  name="getDonations[@donations.NumberInList].simchaid" value="@donations.SimchaId" />
+                        </td>
+                        
+                    </tr>
+                    }
+                </table>
+            </div>
+            <div style="text-align:center;">
+                <button class="btn-lg btn-danger">Update</button>
+            </div>
+        </form>
+    </div>
+</div>
