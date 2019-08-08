@@ -15,14 +15,19 @@ namespace HW54_SimchaFund_Mar26.Controllers
             SimchaFundManager mgr = new SimchaFundManager(Properties.Settings.Default.SFConStr);
             IEnumerable<Simcha> simchas = mgr.GetSimchos();
             List<IndexViewModel> vm = new List<IndexViewModel>();
+            int id = 0;
             foreach(Simcha simcha in simchas)
             {
-                vm.Add(new IndexViewModel
+                if(simcha.Id != id)
                 {
-                    Simcha = simcha,
-                    ContributerCount = mgr.GetCountContributers(),
-                    AmountOfContributers = mgr.GetAmountOfPeopleGiving(simcha.Id),
-                });
+                    vm.Add(new IndexViewModel
+                    {
+                        Simcha = simcha,
+                        ContributerCount = mgr.GetCountContributers(),
+                        AmountOfContributers = mgr.GetAmountOfPeopleGiving(simcha.Id),
+                    });
+                }
+                id = simcha.Id;
             }
             return View(vm);
         }
@@ -65,26 +70,13 @@ namespace HW54_SimchaFund_Mar26.Controllers
             GetDonationsForSimchaViewModelList vml = new GetDonationsForSimchaViewModelList();
             vml.GetDonations = vm;
             vml.SimchaName = mgr.GetSimchaNameForId(id);
-            
+            vml.SimchaId = id;
             return View(vml);
         }       
-        public ActionResult UpdateContributions (List<Donations> getDonations)
+        public ActionResult UpdateContributions (List<Donations> getDonations, int simchaId)
         {
-            bool first = true;
             SimchaFundManager mgr = new SimchaFundManager(Properties.Settings.Default.SFConStr);
-                foreach(Donations d in getDonations)
-            {
-                if(d.Donated == true)
-                {
-                    
-                    mgr.AddDonation(d,first);
-                    if (first)
-                    {
-                        first = false;
-                    }
-                }
-                
-            }
+            mgr.AddDonations(getDonations, simchaId);           
             return Redirect("/home/index");
         }
         public ActionResult Contributers()

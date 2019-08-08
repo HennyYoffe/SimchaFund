@@ -20,10 +20,11 @@
         $("#efirstname").val(`${fName}`);
         $("#elastname").val(`${lname}`);
         $("#ecell").val(`${cell}`);
-        $("#edate").val(`${date}`);    
-        if (ainclude == true) {
-            document.getElementById("ealwaysinclude").checked = true;
-        }
+        $("#edate").val(`${date}`);
+        $("#ainclude").prop('checked', ainclude === True);   
+        //if (ainclude == true) {
+        //    document.getElementById("ealwaysinclude").checked = true;
+        //}
         $("#editcontributer").modal();
 
       

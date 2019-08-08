@@ -16,10 +16,7 @@
             <div class="col-md-2">
                 <button class="btn btn btn-danger" id="new-contributor">New Contributor</button>
             </div>
-            <div class="col-md-8">
-                <input type="text" class="input-sm" placeholder="Search" id="search" />
-                <button class="btn btn-danger" id="clear">Clear</button>
-            </div>
+          
             <div>
                 <h3>@*Total: $120,094,578.23*@</h3>
             </div>
@@ -41,9 +38,7 @@
                     <td style="text-align:center;vertical-align:middle;">
                         <button class="btn btn-success deposit " data-id="@c.Id">Deposit</button>
                     </td>
-                    @*<td style="text-align:center;vertical-align:middle;">
-                        <button class="btn btn-success deposit" data-contributor-id="50">Deposit</button>
-                    </td>*@
+                   
                     <td style="text-align:center;vertical-align:middle;">
                         <span style="">
                             @c.FirstName @c.LastName
@@ -104,8 +99,8 @@
                     <input type="hidden" name="contributerid" id="contributerid" value="0" />
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                    <input class="btn btn-primary" name="commit" type="submit" value="Save" id="submit">
+                    <button class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    <input class="btn btn-primary" name="commit" type="submit" id="submit">
                 </div>
             </form>
     </div>

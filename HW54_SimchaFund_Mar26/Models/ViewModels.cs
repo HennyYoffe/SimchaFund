@@ -24,5 +24,6 @@ namespace HW54_SimchaFund_Mar26.Models
     {
         public List<GetDonationsForSimchaViewModel> GetDonations { get; set; }
         public string SimchaName { get; set; }
+        public int SimchaId { get; set; }
     }
 }

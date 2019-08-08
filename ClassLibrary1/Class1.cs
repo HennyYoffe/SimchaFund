@@ -11,7 +11,7 @@ namespace ClassLibrary1
     {
         public int Id { get; set; }
         public string Name { get; set; }
-        public DateTime Date { get; set; }     
+        public DateTime Date { get; set; }
         public decimal Total { get; set; }
     }
     public class Contributer
@@ -25,7 +25,7 @@ namespace ClassLibrary1
         public bool AlwaysInclude { get; set; }
         public List<Deposit> Deposits { get; set; }
         public List<Donations> Donations { get; set; }
-       public List<DepositDonation> DepositDonations { get; set; }
+        public List<DepositDonation> DepositDonations { get; set; }
     }
     public class Deposit
     {
@@ -49,7 +49,7 @@ namespace ClassLibrary1
         public DateTime Date { get; set; }
         public decimal Amount { get; set; }
     }
-  
+
     public class SimchaFundManager
     {
         private string _connectionstring;
@@ -58,7 +58,7 @@ namespace ClassLibrary1
         {
             _connectionstring = connectionstring;
         }
- 
+
         public void AddSimcha(Simcha simcha)
         {
             SqlConnection conn = new SqlConnection(_connectionstring);
@@ -113,7 +113,7 @@ namespace ClassLibrary1
                     Id = (int)reader["Id"],
                     Date = (DateTime)reader["SimchaDate"],
                     Name = (string)reader["name"],
-                    
+
                 });
 
             }
@@ -125,7 +125,7 @@ namespace ClassLibrary1
                     {
                         if (s.Id == d.SimchaId)
                         {
-                            
+
                             s.Total += d.Amount;
                         }
                     }
@@ -167,31 +167,33 @@ namespace ClassLibrary1
             conn.Dispose();
 
         }
-        public void AddDonation(Donations donations, bool first)
+        public void AddDonations(IEnumerable<Donations> donations, int simchaId)
         {
-            SqlConnection conn = new SqlConnection(_connectionstring);
-            SqlCommand command = conn.CreateCommand();
-            if (first)
+            using (var connection = new SqlConnection(_connectionstring))
+            using (var cmd = connection.CreateCommand())
             {
-                command.CommandText = @"delete simchacontributer
-                                    insert into simchacontributer
-                                values (@simchaid, @contributerid,@amount,@date)";
+                cmd.CommandText = "DELETE FROM simchacontributer WHERE SimchaId = @simchaId";
+                cmd.Parameters.AddWithValue("@simchaId", simchaId);
+
+                connection.Open();
+                cmd.ExecuteNonQuery();
+
+                cmd.Parameters.Clear();
+                cmd.CommandText = @"INSERT INTO simchacontributer (SimchaId, ContributerId, Amount,Date)
+                                    VALUES (@simchaId, @contributorId, @amount,@date)";
+                foreach (Donations donation in donations.Where(d => d.Donated))
+                {
+                    cmd.Parameters.Clear();
+                    cmd.Parameters.AddWithValue("@simchaId", simchaId);
+                    cmd.Parameters.AddWithValue("@contributorId", donation.ContributerId);
+                    cmd.Parameters.AddWithValue("@amount", donation.Amount);
+                    cmd.Parameters.AddWithValue("@date", DateTime.Now);
+                    cmd.ExecuteNonQuery();
+                }
+
             }
-            else
-            {
-                command.CommandText = @"insert into simchacontributer
-                                values (@simchaid, @contributerid,@amount,@date)";
-            }            
-            command.Parameters.AddWithValue("@amount", donations.Amount);
-            command.Parameters.AddWithValue("@contributerid", donations.ContributerId);
-            command.Parameters.AddWithValue("@date", DateTime.Today);
-            command.Parameters.AddWithValue("@simchaid", donations.SimchaId);
-            conn.Open();
-            command.ExecuteNonQuery();
-            conn.Close();
-            conn.Dispose();
         }
-        public void EditContributer (Contributer contributer)
+        public void EditContributer(Contributer contributer)
         {
             SqlConnection conn = new SqlConnection(_connectionstring);
             SqlCommand cmd = conn.CreateCommand();
@@ -238,8 +240,8 @@ namespace ClassLibrary1
                     DepositDonations = new List<DepositDonation>(),
 
                 });
-            } 
-            foreach(Contributer c in contributers)
+            }
+            foreach (Contributer c in contributers)
             {
                 AddDepositsContributer(c);
                 AddDonationsToContributer(c);
@@ -282,7 +284,7 @@ namespace ClassLibrary1
                     });
                 }
             }
-            }
+        }
 
         public void AddDepositsContributer(Contributer c)
         {
@@ -296,62 +298,62 @@ namespace ClassLibrary1
             while (reader.Read())
             {
                 c.Balance += (decimal)reader["depositamount"];
-                    c.Deposits.Add(new Deposit
-                    {
-                        Amount = (decimal)reader["depositamount"],
-                        ContributerId = (int)reader["depositcontributerid"],
-                        Id = (int)reader["depositid"],
-                        Date = (DateTime)reader["depositdate"],
-                    });
-                
+                c.Deposits.Add(new Deposit
+                {
+                    Amount = (decimal)reader["depositamount"],
+                    ContributerId = (int)reader["depositcontributerid"],
+                    Id = (int)reader["depositid"],
+                    Date = (DateTime)reader["depositdate"],
+                });
+
             }
         }
         public int GetCountContributers()
-    {
-        SqlConnection conn = new SqlConnection(_connectionstring);
-        SqlCommand cmd = conn.CreateCommand();
-        cmd.CommandText = @"select COUNT(*) from Contributer";
-        conn.Open();
-        int count = (int)cmd.ExecuteScalar();
-        conn.Close();
-        conn.Dispose();
-        return count;
-    }
-    public int GetAmountOfPeopleGiving(int id)
-    {
-        SqlConnection conn = new SqlConnection(_connectionstring);
-        SqlCommand cmd = conn.CreateCommand();
-        cmd.CommandText = @" select COUNT(*) from SimchaContributer sc
+        {
+            SqlConnection conn = new SqlConnection(_connectionstring);
+            SqlCommand cmd = conn.CreateCommand();
+            cmd.CommandText = @"select COUNT(*) from Contributer";
+            conn.Open();
+            int count = (int)cmd.ExecuteScalar();
+            conn.Close();
+            conn.Dispose();
+            return count;
+        }
+        public int GetAmountOfPeopleGiving(int id)
+        {
+            SqlConnection conn = new SqlConnection(_connectionstring);
+            SqlCommand cmd = conn.CreateCommand();
+            cmd.CommandText = @" select COUNT(*) from SimchaContributer sc
                                 where sc.SimchaId = @id";
-        cmd.Parameters.AddWithValue("@id", id);
-        conn.Open();
-        int count = (int)cmd.ExecuteScalar();
-        conn.Close();
-        conn.Dispose();
-        return count;
-    }
+            cmd.Parameters.AddWithValue("@id", id);
+            conn.Open();
+            int count = (int)cmd.ExecuteScalar();
+            conn.Close();
+            conn.Dispose();
+            return count;
+        }
         public void CombineAndSortDepositsAndDonations(Contributer c)
         {
-            foreach(Deposit deposit in c.Deposits)
+            foreach (Deposit deposit in c.Deposits)
             {
-               c.DepositDonations.Add(new DepositDonation
+                c.DepositDonations.Add(new DepositDonation
                 {
                     Action = "Deposit",
                     Date = deposit.Date,
                     Amount = deposit.Amount
                 });
             }
-            foreach(Donations donations in c.Donations)
+            foreach (Donations donations in c.Donations)
             {
                 string name = GetSimchaNameForId(donations.SimchaId);
-               c.DepositDonations.Add(new DepositDonation
+                c.DepositDonations.Add(new DepositDonation
                 {
                     Action = $"Contribution to the {name}",
                     Date = donations.Date,
                     Amount = -donations.Amount,
                 });
             }
-            c.DepositDonations.Sort((d1,d2) => DateTime.Compare(d1.Date,d2.Date));           
+            c.DepositDonations.Sort((d1, d2) => DateTime.Compare(d1.Date, d2.Date));
         }
         public string GetSimchaNameForId(int id)
         {
@@ -381,22 +383,22 @@ namespace ClassLibrary1
             while (reader.Read())
             {
                 var amt = reader["amount"];
-                
+
                 if (amt != DBNull.Value)
                 {
-                   amount = (decimal)amt;
+                    amount = (decimal)amt;
                 }
-            
+
             }
-               
-           
+
+
             conn.Close();
             conn.Dispose();
             return amount;
         }
     }
 }
- 
+
 
 
 
